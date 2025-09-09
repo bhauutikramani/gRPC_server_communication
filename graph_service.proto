@@ -1,0 +1,67 @@
+syntax = "proto3";
+
+package graph;
+
+// Service definition
+service GraphService {
+    // Submit a graph from a client
+    rpc SubmitGraph(GraphSubmission) returns (SubmissionResponse);
+    
+    // Query for independent set
+    rpc HasIndependentSet(IndependentSetQuery) returns (BooleanResponse);
+    
+    // Query for matching
+    rpc HasMatching(MatchingQuery) returns (BooleanResponse);
+    
+    // Get current graph status (optional utility method)
+    rpc GetGraphStatus(Empty) returns (GraphStatus);
+    
+    // Add this method for clearing the graph
+    rpc ResetGraph(ResetRequest) returns (StatusResponse);
+}
+
+// Message types
+message GraphSubmission {
+    string client_id = 1;
+    repeated AdjacencyList adjacency_lists = 2;
+}
+
+message AdjacencyList {
+    int32 node = 1;
+    repeated int32 neighbors = 2;
+}
+
+message SubmissionResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message IndependentSetQuery {
+    int32 k = 1;
+}
+
+message MatchingQuery {
+    int32 k = 1;
+}
+
+message BooleanResponse {
+    bool result = 1;
+    string message = 2;
+}
+
+message Empty {}
+
+message GraphStatus {
+    int32 total_nodes = 1;
+    int32 total_edges = 2;
+    repeated string connected_clients = 3;
+}
+
+message StatusResponse {
+    bool success = 1;
+    string message = 2;
+}
+
+message ResetRequest {
+    string client_id = 1;
+}
