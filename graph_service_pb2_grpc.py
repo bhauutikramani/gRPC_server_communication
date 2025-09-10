@@ -40,14 +40,14 @@ class GraphServiceStub(object):
                 request_serializer=graph__service__pb2.GraphSubmission.SerializeToString,
                 response_deserializer=graph__service__pb2.SubmissionResponse.FromString,
                 _registered_method=True)
-        self.HasIndependentSet = channel.unary_unary(
-                '/graph.GraphService/HasIndependentSet',
-                request_serializer=graph__service__pb2.IndependentSetQuery.SerializeToString,
+        self.IndependentSetQuery = channel.unary_unary(
+                '/graph.GraphService/IndependentSetQuery',
+                request_serializer=graph__service__pb2.ISQuery.SerializeToString,
                 response_deserializer=graph__service__pb2.BooleanResponse.FromString,
                 _registered_method=True)
-        self.HasMatching = channel.unary_unary(
-                '/graph.GraphService/HasMatching',
-                request_serializer=graph__service__pb2.MatchingQuery.SerializeToString,
+        self.MatchingQuery = channel.unary_unary(
+                '/graph.GraphService/MatchingQuery',
+                request_serializer=graph__service__pb2.MQuery.SerializeToString,
                 response_deserializer=graph__service__pb2.BooleanResponse.FromString,
                 _registered_method=True)
         self.GetGraphStatus = channel.unary_unary(
@@ -73,14 +73,14 @@ class GraphServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def HasIndependentSet(self, request, context):
+    def IndependentSetQuery(self, request, context):
         """Query for independent set
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
-    def HasMatching(self, request, context):
+    def MatchingQuery(self, request, context):
         """Query for matching
         """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
@@ -109,14 +109,14 @@ def add_GraphServiceServicer_to_server(servicer, server):
                     request_deserializer=graph__service__pb2.GraphSubmission.FromString,
                     response_serializer=graph__service__pb2.SubmissionResponse.SerializeToString,
             ),
-            'HasIndependentSet': grpc.unary_unary_rpc_method_handler(
-                    servicer.HasIndependentSet,
-                    request_deserializer=graph__service__pb2.IndependentSetQuery.FromString,
+            'IndependentSetQuery': grpc.unary_unary_rpc_method_handler(
+                    servicer.IndependentSetQuery,
+                    request_deserializer=graph__service__pb2.ISQuery.FromString,
                     response_serializer=graph__service__pb2.BooleanResponse.SerializeToString,
             ),
-            'HasMatching': grpc.unary_unary_rpc_method_handler(
-                    servicer.HasMatching,
-                    request_deserializer=graph__service__pb2.MatchingQuery.FromString,
+            'MatchingQuery': grpc.unary_unary_rpc_method_handler(
+                    servicer.MatchingQuery,
+                    request_deserializer=graph__service__pb2.MQuery.FromString,
                     response_serializer=graph__service__pb2.BooleanResponse.SerializeToString,
             ),
             'GetGraphStatus': grpc.unary_unary_rpc_method_handler(
@@ -169,7 +169,7 @@ class GraphService(object):
             _registered_method=True)
 
     @staticmethod
-    def HasIndependentSet(request,
+    def IndependentSetQuery(request,
             target,
             options=(),
             channel_credentials=None,
@@ -182,8 +182,8 @@ class GraphService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/graph.GraphService/HasIndependentSet',
-            graph__service__pb2.IndependentSetQuery.SerializeToString,
+            '/graph.GraphService/IndependentSetQuery',
+            graph__service__pb2.ISQuery.SerializeToString,
             graph__service__pb2.BooleanResponse.FromString,
             options,
             channel_credentials,
@@ -196,7 +196,7 @@ class GraphService(object):
             _registered_method=True)
 
     @staticmethod
-    def HasMatching(request,
+    def MatchingQuery(request,
             target,
             options=(),
             channel_credentials=None,
@@ -209,8 +209,8 @@ class GraphService(object):
         return grpc.experimental.unary_unary(
             request,
             target,
-            '/graph.GraphService/HasMatching',
-            graph__service__pb2.MatchingQuery.SerializeToString,
+            '/graph.GraphService/MatchingQuery',
+            graph__service__pb2.MQuery.SerializeToString,
             graph__service__pb2.BooleanResponse.FromString,
             options,
             channel_credentials,

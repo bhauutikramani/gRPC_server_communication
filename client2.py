@@ -89,8 +89,8 @@ class GraphClient2:
     def query_independent_set(self, k):
             with grpc.insecure_channel(self.server_address) as channel:
                 stub = graph_service_pb2_grpc.GraphServiceStub(channel)
-                request = graph_service_pb2.IndependentSetQuery(k=k)
-                response = stub.HasIndependentSet(request)
+                request = graph_service_pb2.ISQuery(k=k)
+                response = stub.IndependentSetQuery(request)
                 print(f"Independent set query (k={k}): {response.result} - {response.message}")
                 return response.result
                 
@@ -98,8 +98,8 @@ class GraphClient2:
     def query_matching(self, k):
             with grpc.insecure_channel(self.server_address) as channel:
                 stub = graph_service_pb2_grpc.GraphServiceStub(channel)
-                request = graph_service_pb2.MatchingQuery(k=k)
-                response = stub.HasMatching(request)
+                request = graph_service_pb2.MQuery(k=k)
+                response = stub.MatchingQuery(request)
                 print(f"Matching query (k={k}): {response.result} - {response.message}")
                 return response.result
 

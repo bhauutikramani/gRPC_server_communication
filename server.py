@@ -34,7 +34,7 @@ class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
                 
                 return graph_service_pb2.SubmissionResponse(success=True,message=f"Graph from {client_id} successfully processed")
     
-    def HasIndependentSet(self, request, context):
+    def IndependentSetQuery(self, request, context):
             with self.lock:
                 k = request.k
                 print(f"Checking for independent set of size >= {k}")
@@ -57,7 +57,7 @@ class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
                     message=f"Maximum independent set size: {len(max_independent_set)}"
                 )
     
-    def HasMatching(self, request, context):
+    def MatchingQuery(self, request, context):
             with self.lock:
                 k = request.k
                 print(f"Checking for matching of size >= {k}")

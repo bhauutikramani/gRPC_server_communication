@@ -7,6 +7,7 @@ pip package manager
 ## Installation & Setup
 ### Step 1: Create Virtual Environment
 ```bash
+python3 -m venv myenv
 source myenv/bin/activate
 ```
 ### Step 2: Install Required Dependencies
@@ -63,6 +64,7 @@ python3 client2.py
 ### For HPC
 1. **Allocate resource on server** (Terminal 1):
 ```bash
+module load python/
 salloc --nodes=1 --ntasks=3 --cpus-per-task=2
 ```
 
@@ -73,9 +75,11 @@ srun --ntasks=1 --cpus-per-task=2 python3 -u server.py
 
 3. **Run first client** (Terminal 2):
 ```bash
+module load python/
 srun --ntasks=1 --cpus-per-task=1 python3 -u client1.py
 ```
 4. **Run second client** (Terminal 3):
 ```bash
+module load python/
 srun --ntasks=1 --cpus-per-task=1 python3 -u client2.py
 ```

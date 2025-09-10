@@ -8,10 +8,10 @@ service GraphService {
     rpc SubmitGraph(GraphSubmission) returns (SubmissionResponse);
     
     // Query for independent set
-    rpc HasIndependentSet(IndependentSetQuery) returns (BooleanResponse);
+    rpc IndependentSetQuery(ISQuery) returns (BooleanResponse);
     
     // Query for matching
-    rpc HasMatching(MatchingQuery) returns (BooleanResponse);
+    rpc MatchingQuery(MQuery) returns (BooleanResponse);
     
     // Get current graph status (optional utility method)
     rpc GetGraphStatus(Empty) returns (GraphStatus);
@@ -36,11 +36,11 @@ message SubmissionResponse {
     string message = 2;
 }
 
-message IndependentSetQuery {
+message ISQuery {
     int32 k = 1;
 }
 
-message MatchingQuery {
+message MQuery {
     int32 k = 1;
 }
 

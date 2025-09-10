@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13graph_service.proto\x12\x05graph\"S\n\x0fGraphSubmission\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12-\n\x0f\x61\x64jacency_lists\x18\x02 \x03(\x0b\x32\x14.graph.AdjacencyList\"0\n\rAdjacencyList\x12\x0c\n\x04node\x18\x01 \x01(\x05\x12\x11\n\tneighbors\x18\x02 \x03(\x05\"6\n\x12SubmissionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\" \n\x13IndependentSetQuery\x12\t\n\x01k\x18\x01 \x01(\x05\"\x1a\n\rMatchingQuery\x12\t\n\x01k\x18\x01 \x01(\x05\"2\n\x0f\x42ooleanResponse\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x07\n\x05\x45mpty\"R\n\x0bGraphStatus\x12\x13\n\x0btotal_nodes\x18\x01 \x01(\x05\x12\x13\n\x0btotal_edges\x18\x02 \x01(\x05\x12\x19\n\x11\x63onnected_clients\x18\x03 \x03(\t\"2\n\x0eStatusResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"!\n\x0cResetRequest\x12\x11\n\tclient_id\x18\x01 \x01(\t2\xc4\x02\n\x0cGraphService\x12@\n\x0bSubmitGraph\x12\x16.graph.GraphSubmission\x1a\x19.graph.SubmissionResponse\x12G\n\x11HasIndependentSet\x12\x1a.graph.IndependentSetQuery\x1a\x16.graph.BooleanResponse\x12;\n\x0bHasMatching\x12\x14.graph.MatchingQuery\x1a\x16.graph.BooleanResponse\x12\x32\n\x0eGetGraphStatus\x12\x0c.graph.Empty\x1a\x12.graph.GraphStatus\x12\x38\n\nResetGraph\x12\x13.graph.ResetRequest\x1a\x15.graph.StatusResponseb\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x13graph_service.proto\x12\x05graph\"S\n\x0fGraphSubmission\x12\x11\n\tclient_id\x18\x01 \x01(\t\x12-\n\x0f\x61\x64jacency_lists\x18\x02 \x03(\x0b\x32\x14.graph.AdjacencyList\"0\n\rAdjacencyList\x12\x0c\n\x04node\x18\x01 \x01(\x05\x12\x11\n\tneighbors\x18\x02 \x03(\x05\"6\n\x12SubmissionResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x14\n\x07ISQuery\x12\t\n\x01k\x18\x01 \x01(\x05\"\x13\n\x06MQuery\x12\t\n\x01k\x18\x01 \x01(\x05\"2\n\x0f\x42ooleanResponse\x12\x0e\n\x06result\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"\x07\n\x05\x45mpty\"R\n\x0bGraphStatus\x12\x13\n\x0btotal_nodes\x18\x01 \x01(\x05\x12\x13\n\x0btotal_edges\x18\x02 \x01(\x05\x12\x19\n\x11\x63onnected_clients\x18\x03 \x03(\t\"2\n\x0eStatusResponse\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t\"!\n\x0cResetRequest\x12\x11\n\tclient_id\x18\x01 \x01(\t2\xb5\x02\n\x0cGraphService\x12@\n\x0bSubmitGraph\x12\x16.graph.GraphSubmission\x1a\x19.graph.SubmissionResponse\x12=\n\x13IndependentSetQuery\x12\x0e.graph.ISQuery\x1a\x16.graph.BooleanResponse\x12\x36\n\rMatchingQuery\x12\r.graph.MQuery\x1a\x16.graph.BooleanResponse\x12\x32\n\x0eGetGraphStatus\x12\x0c.graph.Empty\x1a\x12.graph.GraphStatus\x12\x38\n\nResetGraph\x12\x13.graph.ResetRequest\x1a\x15.graph.StatusResponseb\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -37,20 +37,20 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_ADJACENCYLIST']._serialized_end=163
   _globals['_SUBMISSIONRESPONSE']._serialized_start=165
   _globals['_SUBMISSIONRESPONSE']._serialized_end=219
-  _globals['_INDEPENDENTSETQUERY']._serialized_start=221
-  _globals['_INDEPENDENTSETQUERY']._serialized_end=253
-  _globals['_MATCHINGQUERY']._serialized_start=255
-  _globals['_MATCHINGQUERY']._serialized_end=281
-  _globals['_BOOLEANRESPONSE']._serialized_start=283
-  _globals['_BOOLEANRESPONSE']._serialized_end=333
-  _globals['_EMPTY']._serialized_start=335
-  _globals['_EMPTY']._serialized_end=342
-  _globals['_GRAPHSTATUS']._serialized_start=344
-  _globals['_GRAPHSTATUS']._serialized_end=426
-  _globals['_STATUSRESPONSE']._serialized_start=428
-  _globals['_STATUSRESPONSE']._serialized_end=478
-  _globals['_RESETREQUEST']._serialized_start=480
-  _globals['_RESETREQUEST']._serialized_end=513
-  _globals['_GRAPHSERVICE']._serialized_start=516
-  _globals['_GRAPHSERVICE']._serialized_end=840
+  _globals['_ISQUERY']._serialized_start=221
+  _globals['_ISQUERY']._serialized_end=241
+  _globals['_MQUERY']._serialized_start=243
+  _globals['_MQUERY']._serialized_end=262
+  _globals['_BOOLEANRESPONSE']._serialized_start=264
+  _globals['_BOOLEANRESPONSE']._serialized_end=314
+  _globals['_EMPTY']._serialized_start=316
+  _globals['_EMPTY']._serialized_end=323
+  _globals['_GRAPHSTATUS']._serialized_start=325
+  _globals['_GRAPHSTATUS']._serialized_end=407
+  _globals['_STATUSRESPONSE']._serialized_start=409
+  _globals['_STATUSRESPONSE']._serialized_end=459
+  _globals['_RESETREQUEST']._serialized_start=461
+  _globals['_RESETREQUEST']._serialized_end=494
+  _globals['_GRAPHSERVICE']._serialized_start=497
+  _globals['_GRAPHSERVICE']._serialized_end=806
 # @@protoc_insertion_point(module_scope)
