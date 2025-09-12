@@ -83,3 +83,9 @@ srun --ntasks=1 --cpus-per-task=1 python3 -u client1.py
 module load python/
 srun --ntasks=1 --cpus-per-task=1 python3 -u client2.py
 ```
+
+Client1 loads its graph from graph1.json, and Client2 loads its graph from graph2.json. Both clients then submit their respective graphs to the server using the SubmitGraph method. The server merges both graphs to form a combined graph.
+
+After this, both clients can query the server simultaneously — for example, Client1 may ask for an independent set query while Client2 asks for a matching number query. These queries can run in parallel since they are read-only operations.
+
+At any time, either client can upload new nodes or edges to the server again. When this happens, the server updates the combined graph (using a write lock). During this update, queries are temporarily paused. Once the update is finished, queries can again run in parallel without issues.
