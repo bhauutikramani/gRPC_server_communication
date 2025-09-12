@@ -5,37 +5,76 @@ import networkx as nx #networkx is a graph library for graph operations
 import graph_service_pb2
 import graph_service_pb2_grpc
 
+import threading
+
+class RWLock:
+    def __init__(self):
+        self.lock = threading.Lock()
+        self.read_ready = threading.Condition(self.lock)
+        self.readers = 0
+
+    def acquire_read(self):
+        with self.lock:
+            self.readers += 1
+
+    def release_read(self):
+        with self.lock:
+            self.readers -= 1
+            if self.readers == 0:
+                self.read_ready.notify_all()
+
+    def acquire_write(self):
+        self.lock.acquire()
+        while self.readers > 0:
+            self.read_ready.wait()
+
+    def release_write(self):
+        self.lock.release()
+
 class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
     def __init__(self):
         self.combined_graph = nx.Graph()
         self.client_graphs = {}  # Store individual client graphs
-        self.lock = threading.RLock()  # For thread-safe operations
+        self.rwlock = RWLock()  # For thread-safe operations
         self.combined_graph.clear()
         self.client_graphs.clear()
     
     def SubmitGraph(self, request, context):
-            with self.lock:
+            self.rwlock.acquire_write()
+            try:
                 client_id = request.client_id
                 print(f"Received graph from client: {client_id}")
-                client_graph = nx.Graph() #dict<int, dict<int, dict>>
                 
+                # Get or create client graph
+                if client_id not in self.client_graphs:
+                    self.client_graphs[client_id] = nx.Graph()
+                
+                client_graph = self.client_graphs[client_id]
+                
+                # Add new nodes and edges to existing client graph (merge instead of replace)
                 for adj_list in request.adjacency_lists:
                     node = adj_list.node #node is the node number
                     neighbors = list(adj_list.neighbors) #neighbors is the list of neighbors
                     client_graph.add_node(node)
                     for neighbor in neighbors:
                         client_graph.add_edge(node, neighbor)
-                self.client_graphs[client_id] = client_graph
+                
                 self._rebuild_combined_graph()
                 
-                print(f"Graph from {client_id} processed. Combined graph: "
-                          f"{self.combined_graph.number_of_nodes()} nodes ,"
+                print(f"Graph from {client_id} processed and merged. Combined graph: "
+                          f"{self.combined_graph.number_of_nodes()} nodes, "
                           f"{self.combined_graph.number_of_edges()} edges")
+                print(f"Client {client_id} now has: "
+                          f"{client_graph.number_of_nodes()} nodes, "
+                          f"{client_graph.number_of_edges()} edges")
                 
-                return graph_service_pb2.SubmissionResponse(success=True,message=f"Graph from {client_id} successfully processed")
+                return graph_service_pb2.SubmissionResponse(success=True,message=f"Graph from {client_id} successfully processed and merged")
+            finally:
+                self.rwlock.release_write()
     
     def IndependentSetQuery(self, request, context):
-            with self.lock:
+            self.rwlock.acquire_read()
+            try:
                 k = request.k
                 print(f"Checking for independent set of size >= {k}")
                 
@@ -56,9 +95,12 @@ class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
                     result=result,
                     message=f"Maximum independent set size: {len(max_independent_set)}"
                 )
+            finally:
+                self.rwlock.release_read()
     
     def MatchingQuery(self, request, context):
-            with self.lock:
+            self.rwlock.acquire_read()
+            try:
                 k = request.k
                 print(f"Checking for matching of size >= {k}")
                 
@@ -80,15 +122,19 @@ class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
                     result=result,
                     message=f"Maximum matching size: {matching_size}"
                 )
-    
+            finally:
+                self.rwlock.release_read()
     def GetGraphStatus(self, request, context):
-            with self.lock:
+            self.rwlock.acquire_read()
+            try:    
                 return graph_service_pb2.GraphStatus(
                     total_nodes=self.combined_graph.number_of_nodes(),
                     total_edges=self.combined_graph.number_of_edges(),
                     connected_clients=list(self.client_graphs.keys())
                 )
-    
+            finally:    
+                self.rwlock.release_read()
+
     def _rebuild_combined_graph(self):
         self.combined_graph.clear()
         all_edges = set()
@@ -120,26 +166,6 @@ class GraphService(graph_service_pb2_grpc.GraphServiceServicer):
         except:
             return self._greedy_independent_set()
     
-    # def _greedy_independent_set(self):
-    #     """Greedy approximation for maximum independent set"""
-    #     independent_set = set()
-    #     remaining_nodes = set(self.combined_graph.nodes())
-        
-    #     while remaining_nodes:
-    #         # Choose node with minimum degree among remaining nodes
-    #         min_degree_node = min(remaining_nodes, 
-    #                             key=lambda n: len(set(self.combined_graph.neighbors(n)) & remaining_nodes))
-            
-    #         # Add to independent set
-    #         independent_set.add(min_degree_node)
-            
-    #         # Remove node and all its neighbors from remaining nodes
-    #         neighbors_to_remove = set(self.combined_graph.neighbors(min_degree_node)) & remaining_nodes
-    #         remaining_nodes -= neighbors_to_remove
-    #         remaining_nodes.discard(min_degree_node)
-        
-    #     return independent_set
-
     def _greedy_independent_set(self):
         independent_set = set()
         remaining_nodes = set(self.combined_graph.nodes())

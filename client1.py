@@ -1,68 +1,34 @@
 import grpc
-import time
+import json
 import graph_service_pb2
 import graph_service_pb2_grpc
 
-class GraphClient1:
+class Graphclient1:
     def __init__(self, server_address='localhost:1025'):
         self.server_address = server_address
         self.client_id = "client_1"
-        self.graph = {
- 1: [44],
- 2: [13, 40, 6, 30],
- 3: [],
- 4: [27, 39, 48, 10],
- 5: [10, 41, 24, 44],
- 6: [14, 28, 2],
- 7: [],
- 8: [46, 24, 42, 40, 19],
- 9: [47, 43],
- 10: [5, 11, 14, 4, 13],
- 11: [14, 41, 10, 46, 33],
- 12: [15, 29],
- 13: [20, 2, 37, 40, 10],
- 14: [11, 6, 10],
- 15: [17, 12, 25, 37],
- 16: [22],
- 17: [21, 15, 32, 34],
- 18: [38, 34],
- 19: [27, 29, 32, 8, 22],
- 20: [13, 34, 46],
- 21: [34, 17, 23, 44],
- 22: [16, 39, 19],
- 23: [46, 21, 32],
- 24: [8, 5],
- 25: [46, 15],
- 26: [33, 38],
- 27: [47, 4, 37, 19],
- 28: [38, 47, 6, 37],
- 29: [47, 19, 12],
- 30: [36, 40, 2],
- 31: [],
- 32: [17, 19, 23],
- 33: [26, 11],
- 34: [21, 18, 20, 17, 50],
- 35: [],
- 36: [30, 47],
- 37: [27, 45, 13, 15, 28],
- 38: [18, 26, 28],
- 39: [4, 22],
- 40: [30, 8, 2, 13],
- 41: [11, 48, 5],
- 42: [8],
- 43: [9],
- 44: [1, 21, 5],
- 45: [37],
- 46: [8, 23, 25, 20, 11],
- 47: [27, 29, 9, 36, 28],
- 48: [4, 41],
- 49: [],
- 50: [34]
-}
-
-
+        self.graph = {}
         
+    def load_graph_from_json(self):
+        try:
+            with open('graph1.json', 'r') as file:
+                data = json.load(file)
+                # Convert string keys to integers if needed
+                self.graph = {int(k): v for k, v in data.items()}
+            print("Graph loaded successfully from graph.json")
+            return True
+        except FileNotFoundError:
+            print("Error: graph.json file not found in current directory")
+            return False
+        except json.JSONDecodeError:
+            print("Error: Invalid JSON format in graph.json")
+            return False
+        except Exception as e:
+            print(f"Error loading graph: {e}")
+            return False
+
     def connect_and_submit(self):
+        try:
             with grpc.insecure_channel(self.server_address) as channel:
                 stub = graph_service_pb2_grpc.GraphServiceStub(channel)
                 adjacency_lists = []
@@ -84,56 +50,101 @@ class GraphClient1:
                     print(f"Failed to submit graph: {response.message}")
                 
                 return response.success
-    
+        except grpc.RpcError as e:
+            print(f"gRPC error: fail to connect to server at {self.server_address}: {e}")
+            return False    
+        
     def query_independent_set(self, k):
+        try:
             with grpc.insecure_channel(self.server_address) as channel:
                 stub = graph_service_pb2_grpc.GraphServiceStub(channel)
                 request = graph_service_pb2.ISQuery(k=k)
                 response = stub.IndependentSetQuery(request)
                 print(f"Independent set query (k={k}): {response.result} - {response.message}")
                 return response.result
+        except grpc.RpcError as e:
+            print(f"gRPC error during independent set query:fail to connect to server: {e}")
+            return None
                 
-    
     def query_matching(self, k):
+        try:
             with grpc.insecure_channel(self.server_address) as channel:
                 stub = graph_service_pb2_grpc.GraphServiceStub(channel)
                 request = graph_service_pb2.MQuery(k=k)
                 response = stub.MatchingQuery(request)
                 print(f"Matching query (k={k}): {response.result} - {response.message}")
                 return response.result
-
-    
+        except grpc.RpcError as e:
+            print(f"gRPC error during matching query: fail to connect to server: {e}")
+            return None
+        
     def get_graph_status(self):
-            with grpc.insecure_channel(self.server_address) as channel:
-                stub = graph_service_pb2_grpc.GraphServiceStub(channel)
-                request = graph_service_pb2.Empty()
-                response = stub.GetGraphStatus(request)
-                print(f"Graph Status - Nodes: {response.total_nodes}, "f"Edges: {response.total_edges}, "f"Clients: {list(response.connected_clients)}")
-                return response
+        with grpc.insecure_channel(self.server_address) as channel:
+            stub = graph_service_pb2_grpc.GraphServiceStub(channel)
+            request = graph_service_pb2.Empty()
+            response = stub.GetGraphStatus(request)
+            print(f"Graph Status - Nodes: {response.total_nodes}, "f"Edges: {response.total_edges}, "f"Clients: {list(response.connected_clients)}")
+            return response
 
 def main():
-    client = GraphClient1()
-    print("Client 1 Graph:")
-    for node, neighbors in client.graph.items():
-        print(f"  Node {node}: {neighbors}")
+    client = Graphclient1()
     
-    if client.connect_and_submit():
-        print("Graph submission successful!")
-        print("Enter k values for queries (enter -1 to disconnect and exit):")
+    while True:
+        print("\nEnter choice:")
+        print("1) Insert graph")
+        print("2) Insert k")
+        print("3) Exit")
         
-        while True:
-                k = int(input("Enter k value: "))
-                if k == -1:
-                    print("Disconnecting client and exiting...")
-                    break
-                print(f"Performing queries with k={k}...")
-                client.query_independent_set(k)
-                client.query_matching(k)
+        try:
+            choice = input("Enter your choice (1-3): ").strip()
+            
+            if choice == '1':
+                print("Loading graph from graph.json...")
+                if client.load_graph_from_json():
+                    
+                    if client.connect_and_submit():
+                        print("Graph submission successful!")
+                    else:
+                        print("Failed to submit graph")
+                        
+            elif choice == '2':
+                if not client.graph:
+                    print("Please insert graph first (option 1)")
+                    continue
+                    
+                print("Enter k values for queries (enter -1 to return to menu):")
+                while True:
+                    try:
+                        k = int(input("Enter k value: "))
+                        if k == -1:
+                            print("Returning to main menu...")
+                            break
+                        print(f"Performing queries with k={k}...")
+                        client.query_independent_set(k)
+                        client.query_matching(k)
+                    except ValueError:
+                        print("Please enter a valid integer")
+                    except KeyboardInterrupt:
+                        print("\nReturning to main menu...")
+                        break
+                        
+            elif choice == '3':
+                print("Exiting program...")
+                if client.graph:
+                    try:
+                        client.get_graph_status()
+                    except Exception as e:
+                        print(f"Error retrieving graph status: {e}")
+                break
                 
-        print("Client execution completed.")
-        client.get_graph_status()
-    else:
-        print("Failed to submit graph")
+            else:
+                print("Invalid choice. Please enter 1, 2, or 3.")
+                
+        except KeyboardInterrupt:
+            print("\nExiting program...")
+            break
+        except Exception as e:
+            print(f"An error occurred: {e}")
 
 if __name__ == '__main__':
     main()

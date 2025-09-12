@@ -7,8 +7,8 @@ pip package manager
 ## Installation & Setup
 ### Step 1: Create Virtual Environment
 ```bash
-python3 -m venv myenv
-source myenv/bin/activate
+python3 -m venv myven
+source myven/bin/activate
 ```
 ### Step 2: Install Required Dependencies
 ```bash
